@@ -53,6 +53,16 @@ const validate = (fieldName: string, fieldValue: unknown) => {
 export const action: ActionFunction = async ({ request, params }) => {
   const form: FormData = await request.formData()
 
+  if (form.get("delete") === "yes") {
+    await db.todo.delete({
+      where: {
+        id: params.todoId,
+      },
+    })
+
+    return redirect("/todos")
+  }
+
   const fields = {
     title: form.get("title") ?? undefined,
     description: form.get("description") ?? undefined,
@@ -114,7 +124,7 @@ export default function TodosNewRoute() {
   return (
     <>
       <header>
-        <h2>Add New TODO</h2>
+        <h2>{typeof todo !== "undefined" ? "Update TODO" : "Add New TODO"}</h2>
         <nav>
           <Link to="/todos" title="Back to TODOs" aria-label="Back to TODOs">
             Back to TODOs
@@ -309,6 +319,12 @@ export default function TodosNewRoute() {
           <button type="submit">
             {typeof todo !== "undefined" ? "Update" : "Create new"}
           </button>
+
+          {typeof todo !== "undefined" && (
+            <button type="submit" name="delete" value="yes">
+              Delete
+            </button>
+          )}
         </div>
       </form>
     </>

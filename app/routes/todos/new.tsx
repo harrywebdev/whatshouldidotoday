@@ -1,4 +1,32 @@
 import { Link } from "@remix-run/react"
+import type { ActionFunction } from "@remix-run/node"
+import { redirect } from "@remix-run/node"
+import { db } from "~/utils/db.server"
+
+export const action: ActionFunction = async ({ request }) => {
+  const form: FormData = await request.formData()
+  const title = form.get("title")
+  const description = form.get("description")
+  const repeat = form.getAll("repeat").join(",")
+  const sequence = Number(form.get("sequence"))
+
+  if (typeof title !== "string" || Number.isNaN(sequence)) {
+    throw new Error(`Form not submitted correctly.`)
+  }
+
+  const fields = {
+    title,
+    description: description ? description.toString() : null,
+    repeat,
+    sequence,
+  }
+
+  await db.todo.create({
+    data: fields,
+  })
+
+  return redirect(`/todos`)
+}
 
 export default function TodosNewRoute() {
   return (
@@ -27,41 +55,40 @@ export default function TodosNewRoute() {
             <legend>Repeat</legend>
             <div>
               <label>
-                <input type="checkbox" name="repeat" value="mo" /> Every Monday:
+                <input type="checkbox" name="repeat" value="mo" /> Every Monday
               </label>
             </div>
             <div>
               <label>
-                <input type="checkbox" name="repeat" value="tu" /> Every
-                Tuesday:
+                <input type="checkbox" name="repeat" value="tu" /> Every Tuesday
               </label>
             </div>
             <div>
               <label>
                 <input type="checkbox" name="repeat" value="we" /> Every
-                Wednesday:
+                Wednesday
               </label>
             </div>
             <div>
               <label>
                 <input type="checkbox" name="repeat" value="th" /> Every
-                Thursday:
+                Thursday
               </label>
             </div>
             <div>
               <label>
-                <input type="checkbox" name="repeat" value="fr" /> Every Friday:
+                <input type="checkbox" name="repeat" value="fr" /> Every Friday
               </label>
             </div>
             <div>
               <label>
                 <input type="checkbox" name="repeat" value="sa" /> Every
-                Saturday:
+                Saturday
               </label>
             </div>
             <div>
               <label>
-                <input type="checkbox" name="repeat" value="su" /> Every Sunday:
+                <input type="checkbox" name="repeat" value="su" /> Every Sunday
               </label>
             </div>
           </fieldset>

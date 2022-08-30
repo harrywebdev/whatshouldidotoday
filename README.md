@@ -1,3 +1,11 @@
+# whatshouldidotoday
+
+weekly/daily routine to-do list app so i can play with remix a little bit.
+
+remix default readme follows.
+
+---
+
 # Welcome to Remix!
 
 - [Remix Docs](https://remix.run/docs)

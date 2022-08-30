@@ -11,7 +11,8 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <title>What should I do today?</title>
-        <Links />
+        {/*TODO: uncomment when ready for creating styling*/}
+        {/*<Links />*/}
       </head>
       <body>
         <header>

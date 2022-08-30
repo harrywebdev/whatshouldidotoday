@@ -1,12 +1,16 @@
 import type { LoaderFunction } from "@remix-run/node"
 import { db } from "~/utils/db.server"
-import type { DailyLog } from "@prisma/client"
+import type { Prisma } from "@prisma/client"
 import { json } from "@remix-run/node"
-import { useLoaderData } from "@remix-run/react"
+import { Link, useLoaderData } from "@remix-run/react"
 import { format, parseISO } from "date-fns"
 
+type DailyLogWithTodos = Prisma.DailyLogGetPayload<{
+  include: { logTodos: true }
+}>
+
 type LoaderData = {
-  dailyLog: DailyLog
+  dailyLog: DailyLogWithTodos
 }
 
 export const loader: LoaderFunction = async () => {
@@ -22,6 +26,9 @@ export const loader: LoaderFunction = async () => {
   const dailyLog = await db.dailyLog.findFirst({
     where: {
       logDate: today,
+    },
+    include: {
+      logTodos: true,
     },
   })
 
@@ -70,6 +77,19 @@ export default function IndexRoute() {
       <header>
         <h2>Today: {format(parseISO(dailyLog.logDate), "do MMMM, y")}</h2>
       </header>
+      <section>
+        <ul>
+          {dailyLog.logTodos.map((todo) => {
+            return (
+              <li key={todo.id}>
+                <strong>{todo.title}</strong>
+                <br />
+                {todo.description}
+              </li>
+            )
+          })}
+        </ul>
+      </section>
     </>
   )
 }

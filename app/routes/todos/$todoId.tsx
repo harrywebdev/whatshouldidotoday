@@ -1,7 +1,9 @@
-import { Link, useActionData } from "@remix-run/react"
-import type { ActionFunction } from "@remix-run/node"
+import { Link, useActionData, useLoaderData } from "@remix-run/react"
+import type { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { json, redirect } from "@remix-run/node"
 import { db } from "~/utils/db.server"
+import type { Todo } from "@prisma/client"
+import invariant from "tiny-invariant"
 
 type ActionData = {
   fieldErrors?: {
@@ -15,6 +17,10 @@ type ActionData = {
     repeat: FormDataEntryValue[]
     sequence: FormDataEntryValue | undefined
   }
+}
+
+type LoaderData = {
+  todo: Todo | undefined
 }
 
 const badRequest = (data: ActionData) => json(data, { status: 400 })
@@ -44,7 +50,7 @@ const validate = (fieldName: string, fieldValue: unknown) => {
   }
 }
 
-export const action: ActionFunction = async ({ request }) => {
+export const action: ActionFunction = async ({ request, params }) => {
   const form: FormData = await request.formData()
 
   const fields = {
@@ -64,18 +70,45 @@ export const action: ActionFunction = async ({ request }) => {
     return badRequest({ fieldErrors, fields })
   }
 
-  await db.todo.create({
-    data: {
-      title: fields.title as string,
-      repeat: fields.repeat.join(","),
-      sequence: Number(fields.sequence),
-    },
-  })
+  if (params.todoId === "new") {
+    await db.todo.create({
+      data: {
+        title: fields.title as string,
+        repeat: fields.repeat.join(","),
+        sequence: Number(fields.sequence),
+      },
+    })
+  } else {
+    await db.todo.update({
+      where: {
+        id: params.todoId,
+      },
+      data: {
+        title: fields.title as string,
+        repeat: fields.repeat.join(","),
+        sequence: Number(fields.sequence),
+      },
+    })
+  }
 
   return redirect(`/todos`)
 }
 
+export const loader: LoaderFunction = async ({ params }) => {
+  if (params.todoId === "new") {
+    return json({})
+  }
+
+  const todo = await db.todo.findUniqueOrThrow({ where: { id: params.todoId } })
+  invariant(todo, `Item not found :(`)
+
+  return json({
+    todo,
+  })
+}
+
 export default function TodosNewRoute() {
+  const { todo } = useLoaderData<LoaderData>()
   const actionData = useActionData<ActionData>()
 
   return (
@@ -99,7 +132,7 @@ export default function TodosNewRoute() {
               defaultValue={
                 typeof actionData?.fields?.title === "string"
                   ? actionData?.fields?.title
-                  : ""
+                  : todo?.title
               }
               aria-invalid={
                 Boolean(actionData?.fieldErrors?.title) || undefined
@@ -124,6 +157,8 @@ export default function TodosNewRoute() {
               defaultValue={
                 typeof actionData?.fields?.description === "string"
                   ? actionData?.fields?.description
+                  : typeof todo?.description === "string"
+                  ? todo.description
                   : ""
               }
             />
@@ -143,7 +178,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="mo"
-                  defaultChecked={actionData?.fields?.repeat?.includes("mo")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("mo") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("mo") >= 0)
+                  }
                 />{" "}
                 Every Monday
               </label>
@@ -154,7 +193,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="tu"
-                  defaultChecked={actionData?.fields?.repeat?.includes("tu")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("tu") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("tu") >= 0)
+                  }
                 />{" "}
                 Every Tuesday
               </label>
@@ -165,7 +208,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="we"
-                  defaultChecked={actionData?.fields?.repeat?.includes("we")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("we") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("we") >= 0)
+                  }
                 />{" "}
                 Every Wednesday
               </label>
@@ -176,7 +223,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="th"
-                  defaultChecked={actionData?.fields?.repeat?.includes("th")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("th") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("th") >= 0)
+                  }
                 />{" "}
                 Every Thursday
               </label>
@@ -187,7 +238,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="fr"
-                  defaultChecked={actionData?.fields?.repeat?.includes("fr")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("fr") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("fr") >= 0)
+                  }
                 />{" "}
                 Every Friday
               </label>
@@ -198,7 +253,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="sa"
-                  defaultChecked={actionData?.fields?.repeat?.includes("sa")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("sa") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("sa") >= 0)
+                  }
                 />{" "}
                 Every Saturday
               </label>
@@ -209,7 +268,11 @@ export default function TodosNewRoute() {
                   type="checkbox"
                   name="repeat"
                   value="su"
-                  defaultChecked={actionData?.fields?.repeat?.includes("su")}
+                  defaultChecked={
+                    actionData?.fields?.repeat?.includes("su") ||
+                    (typeof todo !== "undefined" &&
+                      todo.repeat.indexOf("su") >= 0)
+                  }
                 />{" "}
                 Every Sunday
               </label>
@@ -225,7 +288,7 @@ export default function TodosNewRoute() {
               defaultValue={
                 typeof actionData?.fields?.sequence === "string"
                   ? actionData?.fields?.sequence
-                  : ""
+                  : todo?.sequence
               }
               required
               aria-invalid={
@@ -243,7 +306,9 @@ export default function TodosNewRoute() {
           ) : null}
         </div>
         <div>
-          <button type="submit">Create new TODO</button>
+          <button type="submit">
+            {typeof todo !== "undefined" ? "Update" : "Create new"}
+          </button>
         </div>
       </form>
     </>

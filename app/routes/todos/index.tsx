@@ -42,6 +42,9 @@ export default function TodosIndexRoute() {
               <li key={todo.id}>
                 <strong>{todo.title}</strong> ({todo.repeat})<br />
                 {todo.description}
+                <Link to={`/todos/${todo.id}`} title="Edit" aria-label="Edit">
+                  [ edit ]
+                </Link>
               </li>
             )
           })}

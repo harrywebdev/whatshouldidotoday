@@ -1,4 +1,4 @@
-import { Link, LiveReload, Outlet } from "@remix-run/react"
+import { Link, Links, LiveReload, Outlet } from "@remix-run/react"
 import styles from "./styles/app.css"
 
 export function links() {
@@ -11,6 +11,7 @@ export default function App() {
       <head>
         <meta charSet="utf-8" />
         <title>What should I do today?</title>
+        <Links />
       </head>
       <body>
         <header>

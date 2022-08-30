@@ -40,13 +40,8 @@ export default function TodosIndexRoute() {
           {data.todos.map((todo) => {
             return (
               <li key={todo.id}>
-                <strong>{todo.title}</strong>
-                {todo.description && (
-                  <>
-                    <br />
-                    {todo.description}
-                  </>
-                )}
+                <strong>{todo.title}</strong> ({todo.repeat})<br />
+                {todo.description}
               </li>
             )
           })}

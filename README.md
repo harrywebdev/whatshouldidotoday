@@ -3,6 +3,7 @@
 weekly/daily routine to-do list app so i can play with remix a little bit.
 
 ## TODO:
+
 [ ] Try [zod](https://www.npmjs.com/package/zod)
 
 remix default readme follows.

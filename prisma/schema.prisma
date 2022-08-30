@@ -18,21 +18,21 @@ model Todo {
   description   String?
   repeat        String
   sequence      Int
-  logTodos      LogTodo[]
 }
 
 model DailyLog {
   id            String      @id @default(uuid())
   createdAt     DateTime    @default(now())
   logDate       DateTime
+  logTodos      LogTodo[]
 }
 
 model LogTodo {
   id            String      @id @default(uuid())
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  parentTodo    Todo        @relation(fields: [todoId], references: [id])
-  todoId        String
+  dailyLog      DailyLog    @relation(fields: [dailyLogId], references: [id])
+  dailyLogId    String
   title         String
   description   String?
   sequence      Int

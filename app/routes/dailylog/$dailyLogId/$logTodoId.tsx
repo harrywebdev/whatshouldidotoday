@@ -4,6 +4,16 @@ import { json, redirect } from "@remix-run/node"
 import { db } from "~/utils/db.server"
 import type { Todo } from "@prisma/client"
 import invariant from "tiny-invariant"
+import Button from "~/components/Button"
+import LargeTitle from "~/components/LargeTitle"
+import ScreenHeader from "~/components/ScreenHeader"
+import ScreenHeaderNavLink from "~/components/ScreenHeaderNavLink"
+import FormFieldGroup from "~/components/Form/FormFieldGroup"
+import FormLabel from "~/components/Form/FormLabel"
+import FormField from "~/components/Form/FormField"
+import FormInput from "~/components/Form/FormInput"
+import FormFieldDescription from "~/components/Form/FormFieldDescription"
+import FormTextarea from "~/components/Form/FormTextarea"
 
 type ActionData = {
   fieldErrors?: {
@@ -142,97 +152,140 @@ export default function TodosNewRoute() {
 
   return (
     <>
-      <header>
-        <h2>{!isNew ? "Update Daily Item" : "Add New Daily Item"}</h2>
-        <nav>
-          <Link
-            to={BACK_TO_ROUTE}
-            title="Back to Today"
-            aria-label="Back to Today"
-          >
-            Back to Today
-          </Link>
-        </nav>
-      </header>
+      <ScreenHeader>
+        <LargeTitle>
+          {!isNew ? "Update Daily Item" : "Add New Daily Item"}
+        </LargeTitle>
+        <ScreenHeaderNavLink
+          to={BACK_TO_ROUTE}
+          label={"Back to Today"}
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M15.75 19.5L8.25 12l7.5-7.5"
+              />
+            </svg>
+          }
+        />
+      </ScreenHeader>
 
-      <form method="post">
-        <div>
-          <label>
-            Title:{" "}
-            <input
-              type="text"
-              name="title"
-              defaultValue={
-                typeof actionData?.fields?.title === "string"
-                  ? actionData?.fields?.title
-                  : todo?.title
-              }
-              aria-invalid={
-                Boolean(actionData?.fieldErrors?.title) || undefined
-              }
-              aria-errormessage={
-                actionData?.fieldErrors?.title ? "title-error" : undefined
-              }
-              required
-            />
-          </label>
-          {actionData?.fieldErrors?.title ? (
-            <p className="text-red-600" role="alert" id="title-error">
-              {actionData.fieldErrors.title}
-            </p>
-          ) : null}
-        </div>
-        <div>
-          <label>
-            Description:{" "}
-            <textarea
-              name="description"
-              defaultValue={
-                typeof actionData?.fields?.description === "string"
-                  ? actionData?.fields?.description
-                  : typeof todo?.description === "string"
-                  ? todo.description
-                  : ""
-              }
-            />
-          </label>
-        </div>
-        <div>
-          <label>
-            Sequence:{" "}
-            <input
-              type="number"
-              name="sequence"
-              defaultValue={
-                typeof actionData?.fields?.sequence === "string"
-                  ? actionData?.fields?.sequence
-                  : todo?.sequence
-              }
-              required
-              aria-invalid={
-                Boolean(actionData?.fieldErrors?.sequence) || undefined
-              }
-              aria-errormessage={
-                actionData?.fieldErrors?.sequence ? "sequence-error" : undefined
-              }
-            />
-          </label>
-          {actionData?.fieldErrors?.sequence ? (
-            <p className="text-red-600" role="alert" id="sequence-error">
-              {actionData.fieldErrors.sequence}
-            </p>
-          ) : null}
-        </div>
-        <div>
-          <button type="submit">{!isNew ? "Update" : "Create new"}</button>
+      <div className="px-4">
+        <form method="post">
+          <FormFieldGroup>
+            <FormLabel htmlFor="title">Title</FormLabel>
+            <FormField>
+              <FormInput
+                id="title"
+                type="text"
+                name="title"
+                placeholder="Use imperative form"
+                defaultValue={
+                  typeof actionData?.fields?.title === "string"
+                    ? actionData?.fields?.title
+                    : todo?.title
+                }
+                aria-invalid={
+                  Boolean(actionData?.fieldErrors?.title) || undefined
+                }
+                aria-errormessage={
+                  actionData?.fieldErrors?.title ? "title-error" : undefined
+                }
+                required
+              />
+            </FormField>
+            {actionData?.fieldErrors?.title ? (
+              <FormFieldDescription>
+                <p className="text-red-600" role="alert" id="title-error">
+                  {actionData.fieldErrors.title}
+                </p>
+              </FormFieldDescription>
+            ) : null}
+          </FormFieldGroup>
 
-          {!isNew && (
-            <button type="submit" name="delete" value="yes">
-              Delete
-            </button>
-          )}
-        </div>
-      </form>
+          <FormFieldGroup>
+            <FormLabel htmlFor="description">Description</FormLabel>
+            <FormField>
+              <FormTextarea
+                id="description"
+                name="description"
+                placeholder="Add any details about this item"
+                defaultValue={
+                  typeof actionData?.fields?.description === "string"
+                    ? actionData?.fields?.description
+                    : typeof todo?.description === "string"
+                    ? todo.description
+                    : ""
+                }
+              />
+            </FormField>
+          </FormFieldGroup>
+
+          <FormFieldGroup>
+            <FormLabel htmlFor="sequence">Sequence</FormLabel>
+            <FormField>
+              <FormInput
+                id="sequence"
+                type="number"
+                name="sequence"
+                placeholder="E.g. 50 or 225"
+                defaultValue={
+                  typeof actionData?.fields?.sequence === "string"
+                    ? actionData?.fields?.sequence
+                    : todo?.sequence
+                }
+                aria-invalid={
+                  Boolean(actionData?.fieldErrors?.sequence) || undefined
+                }
+                aria-errormessage={
+                  actionData?.fieldErrors?.sequence
+                    ? "sequence-error"
+                    : undefined
+                }
+                required
+              />
+            </FormField>
+            {actionData?.fieldErrors?.sequence ? (
+              <FormFieldDescription>
+                <p className="text-red-600" role="alert" id="sequence-error">
+                  {actionData.fieldErrors.sequence}
+                </p>
+              </FormFieldDescription>
+            ) : (
+              <FormFieldDescription>
+                This number determines order in the list. Use tens or hundreds.
+              </FormFieldDescription>
+            )}
+          </FormFieldGroup>
+
+          <FormFieldGroup>
+            <div className="pb-2">
+              <Button
+                primary
+                type="submit"
+                label={!isNew ? "Update" : "Create new"}
+              />
+
+              {!isNew && (
+                <Button
+                  type="submit"
+                  name="delete"
+                  value="yes"
+                  label={"Delete"}
+                  className={"ml-3"}
+                />
+              )}
+            </div>
+          </FormFieldGroup>
+        </form>
+      </div>
     </>
   )
 }

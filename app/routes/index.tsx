@@ -2,8 +2,12 @@ import type { ActionFunction, LoaderFunction } from "@remix-run/node"
 import { db } from "~/utils/db.server"
 import type { Prisma } from "@prisma/client"
 import { json, redirect } from "@remix-run/node"
-import { Link, useActionData, useLoaderData } from "@remix-run/react"
+import { useActionData, useLoaderData } from "@remix-run/react"
 import { format, parseISO } from "date-fns"
+import LargeTitle from "~/components/LargeTitle"
+import ScreenHeader from "~/components/ScreenHeader"
+import ScreenHeaderNavLink from "~/components/ScreenHeaderNavLink"
+import LogTodoItem from "~/components/LogTodoItem"
 
 type DailyLogWithTodos = Prisma.DailyLogGetPayload<{
   include: { logTodos: true }
@@ -87,12 +91,12 @@ export const action: ActionFunction = async ({ request }) => {
   }
 
   // make sure we find it
-  await db.logTodo.findUniqueOrThrow({ where: { id } })
+  const logTodo = await db.logTodo.findUniqueOrThrow({ where: { id } })
 
   // mark as done
   await db.logTodo.update({
     data: {
-      isDone: true,
+      isDone: !logTodo.isDone,
     },
     where: {
       id,
@@ -108,18 +112,30 @@ export default function IndexRoute() {
 
   return (
     <>
-      <header>
-        <h2>Today: {format(parseISO(dailyLog.logDate), "do MMMM, y")}</h2>
-        <nav>
-          <Link
-            to={`/dailylog/${dailyLog.id}/new`}
-            title="Add New"
-            aria-label="Add New"
-          >
-            Add New
-          </Link>
-        </nav>
-      </header>
+      <ScreenHeader>
+        <LargeTitle>
+          Today: {format(parseISO(dailyLog.logDate), "do MMM, y")}
+        </LargeTitle>
+        <ScreenHeaderNavLink
+          to={`/dailylog/${dailyLog.id}/new`}
+          label={"Add New"}
+          icon={
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4.5v15m7.5-7.5h-15"
+              />
+            </svg>
+          }
+        />
+      </ScreenHeader>
       <section>
         {actionData?.formError && (
           <p className="text-red-600">{actionData?.formError}</p>
@@ -127,24 +143,12 @@ export default function IndexRoute() {
         <ul>
           {dailyLog.logTodos.map((todo) => {
             return (
-              <li key={todo.id}>
-                <strong>
-                  {todo.isDone ? "☑" : "☐"} {todo.title}
-                </strong>
-                <br />
-                {todo.description}
-                <form method="post" action="?index">
-                  <input type="hidden" name="id" value={todo.id} />
-                  <button type="submit">Mark as Done</button>
-                </form>
-                <Link
-                  to={`/dailylog/${dailyLog.id}/${todo.id}`}
-                  title="Edit"
-                  aria-label="Edit"
-                >
-                  [ edit ]
-                </Link>
-              </li>
+              <LogTodoItem
+                key={todo.id}
+                todo={todo}
+                dailyLogId={dailyLog.id}
+                formAction="?index"
+              />
             )
           })}
         </ul>

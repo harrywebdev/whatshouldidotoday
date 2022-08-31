@@ -86,8 +86,6 @@ export const action: ActionFunction = async ({ request }) => {
     })
   }
 
-  console.log("id", id)
-
   // make sure we find it
   await db.logTodo.findUniqueOrThrow({ where: { id } })
 
@@ -112,6 +110,15 @@ export default function IndexRoute() {
     <>
       <header>
         <h2>Today: {format(parseISO(dailyLog.logDate), "do MMMM, y")}</h2>
+        <nav>
+          <Link
+            to={`/dailylog/${dailyLog.id}/new`}
+            title="Add New"
+            aria-label="Add New"
+          >
+            Add New
+          </Link>
+        </nav>
       </header>
       <section>
         {actionData?.formError && (
@@ -130,6 +137,13 @@ export default function IndexRoute() {
                   <input type="hidden" name="id" value={todo.id} />
                   <button type="submit">Mark as Done</button>
                 </form>
+                <Link
+                  to={`/dailylog/${dailyLog.id}/${todo.id}`}
+                  title="Edit"
+                  aria-label="Edit"
+                >
+                  [ edit ]
+                </Link>
               </li>
             )
           })}

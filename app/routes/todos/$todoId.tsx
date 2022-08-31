@@ -21,6 +21,7 @@ type ActionData = {
 
 type LoaderData = {
   todo: Todo | undefined
+  isNew: boolean
 }
 
 const badRequest = (data: ActionData) => json(data, { status: 400 })
@@ -103,8 +104,20 @@ export const action: ActionFunction = async ({ request, params }) => {
 }
 
 export const loader: LoaderFunction = async ({ params }) => {
+  // pre-fill sequence
+  const lastTodo = await db.todo.findFirst({
+    select: {
+      sequence: true,
+    },
+    orderBy: {
+      sequence: "desc",
+    },
+    take: 1,
+  })
+  const nextSequence = lastTodo ? lastTodo.sequence + 10 : 0
+
   if (params.todoId === "new") {
-    return json({})
+    return json({ todo: { sequence: nextSequence }, isNew: true })
   }
 
   const todo = await db.todo.findUniqueOrThrow({ where: { id: params.todoId } })
@@ -112,17 +125,28 @@ export const loader: LoaderFunction = async ({ params }) => {
 
   return json({
     todo,
+    isNew: false,
   })
 }
 
 export default function TodosNewRoute() {
-  const { todo } = useLoaderData<LoaderData>()
+  const { todo, isNew } = useLoaderData<LoaderData>()
   const actionData = useActionData<ActionData>()
+
+  const repeatItems = [
+    { key: "mo", label: "Every Monday" },
+    { key: "tu", label: "Every Tuesday" },
+    { key: "we", label: "Every Wednesday" },
+    { key: "th", label: "Every Thursday" },
+    { key: "fr", label: "Every Friday" },
+    { key: "sa", label: "Every Saturday" },
+    { key: "su", label: "Every Sunday" },
+  ]
 
   return (
     <>
       <header>
-        <h2>{typeof todo !== "undefined" ? "Update TODO" : "Add New TODO"}</h2>
+        <h2>{!isNew ? "Update TODO" : "Add New TODO"}</h2>
         <nav>
           <Link to="/todos" title="Back to TODOs" aria-label="Back to TODOs">
             Back to TODOs
@@ -180,111 +204,25 @@ export default function TodosNewRoute() {
                 {actionData?.fieldErrors?.repeat}
               </p>
             ) : null}
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="mo"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("mo") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("mo") >= 0)
-                  }
-                />{" "}
-                Every Monday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="tu"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("tu") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("tu") >= 0)
-                  }
-                />{" "}
-                Every Tuesday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="we"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("we") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("we") >= 0)
-                  }
-                />{" "}
-                Every Wednesday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="th"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("th") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("th") >= 0)
-                  }
-                />{" "}
-                Every Thursday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="fr"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("fr") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("fr") >= 0)
-                  }
-                />{" "}
-                Every Friday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="sa"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("sa") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("sa") >= 0)
-                  }
-                />{" "}
-                Every Saturday
-              </label>
-            </div>
-            <div>
-              <label>
-                <input
-                  type="checkbox"
-                  name="repeat"
-                  value="su"
-                  defaultChecked={
-                    actionData?.fields?.repeat?.includes("su") ||
-                    (typeof todo !== "undefined" &&
-                      todo.repeat.indexOf("su") >= 0)
-                  }
-                />{" "}
-                Every Sunday
-              </label>
-            </div>
+            {repeatItems.map((item) => {
+              return (
+                <div>
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="repeat"
+                      value={item.key}
+                      defaultChecked={
+                        actionData?.fields?.repeat?.includes(item.key) ||
+                        (typeof todo?.repeat === "string" &&
+                          todo.repeat.indexOf(item.key) >= 0)
+                      }
+                    />
+                    {` ${item.label}`}
+                  </label>
+                </div>
+              )
+            })}
           </fieldset>
         </div>
         <div>
@@ -314,11 +252,9 @@ export default function TodosNewRoute() {
           ) : null}
         </div>
         <div>
-          <button type="submit">
-            {typeof todo !== "undefined" ? "Update" : "Create new"}
-          </button>
+          <button type="submit">{!isNew ? "Update" : "Create new"}</button>
 
-          {typeof todo !== "undefined" && (
+          {!isNew && (
             <button type="submit" name="delete" value="yes">
               Delete
             </button>

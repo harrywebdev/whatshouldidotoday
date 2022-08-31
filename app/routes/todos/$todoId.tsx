@@ -80,24 +80,22 @@ export const action: ActionFunction = async ({ request, params }) => {
     return badRequest({ fieldErrors, fields })
   }
 
+  const data = {
+    title: fields.title as string,
+    description:
+      typeof fields.description === "string" ? fields.description : null,
+    repeat: fields.repeat.join(","),
+    sequence: Number(fields.sequence),
+  }
+
   if (params.todoId === "new") {
-    await db.todo.create({
-      data: {
-        title: fields.title as string,
-        repeat: fields.repeat.join(","),
-        sequence: Number(fields.sequence),
-      },
-    })
+    await db.todo.create({ data })
   } else {
     await db.todo.update({
       where: {
         id: params.todoId,
       },
-      data: {
-        title: fields.title as string,
-        repeat: fields.repeat.join(","),
-        sequence: Number(fields.sequence),
-      },
+      data,
     })
   }
 

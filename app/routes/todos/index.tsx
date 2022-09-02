@@ -47,7 +47,10 @@ export default function TodosIndexRoute() {
           return todo.repeat.length === group.repeat.length
         }
 
-        return todo.repeat.split(",").includes(group.repeat)
+        return (
+          todo.repeat.split(",").includes(group.repeat) &&
+          todo.repeat.length !== 20
+        )
       }),
     }
   })
@@ -79,7 +82,7 @@ export default function TodosIndexRoute() {
       <section>
         {todos.map((group) => (
           <>
-            <SecondaryTitle className="px-4">{group.label}</SecondaryTitle>
+            <SecondaryTitle className="px-4 mt-6">{group.label}</SecondaryTitle>
             <ul key={group.repeat}>
               {group.items.map((todo) => (
                 <TodoItem key={todo.id} todo={todo} />

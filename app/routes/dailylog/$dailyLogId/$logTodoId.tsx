@@ -279,7 +279,7 @@ export default function TodosNewRoute() {
                   name="delete"
                   value="yes"
                   label={"Delete"}
-                  className={"ml-3"}
+                  className={"ml-3 !text-danger-600"}
                 />
               )}
             </div>

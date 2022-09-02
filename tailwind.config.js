@@ -12,6 +12,7 @@ module.exports = {
       neutral: colors.stone,
       gray: colors.gray,
       white: colors.white,
+      danger: colors.red,
     },
   },
   plugins: [

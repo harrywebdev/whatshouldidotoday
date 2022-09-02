@@ -16,10 +16,10 @@ export default function App() {
         <title>What should I do today?</title>
         <Links />
       </head>
-      <body className="flex">
+      <body className="flex bg-neutral-200">
         <ScreenContainer>
-          <header>
-            <h1 className="text-lg font-medium tracking-wide leading-relaxed uppercase font-mono whitespace-nowrap mb-2 text-center hidden">
+          <header className="hidden">
+            <h1 className="text-lg font-medium tracking-wide leading-relaxed uppercase font-mono whitespace-nowrap mb-2 text-center">
               What should I do today?
             </h1>
             <nav>
@@ -37,10 +37,15 @@ export default function App() {
           <main>
             <Outlet />
           </main>
-          <footer className="bg-gray-50 p-5 h-24 flex items-center justify-center">
+          <footer className="bg-gray-50 p-5 h-24 flex items-center justify-center hidden">
             <p className="text-center text-xs text-gray-800">
               &copy; What should I do today? by{" "}
-              <a href="https://github.com/harrywebdev" className="font-semibold">@harrywebdev</a>
+              <a
+                href="https://github.com/harrywebdev"
+                className="font-semibold"
+              >
+                @harrywebdev
+              </a>
             </p>
           </footer>
         </ScreenContainer>

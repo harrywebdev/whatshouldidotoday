@@ -8,6 +8,7 @@ import LargeTitle from "~/components/LargeTitle"
 import ScreenHeader from "~/components/ScreenHeader"
 import ScreenHeaderNavLink from "~/components/ScreenHeaderNavLink"
 import LogTodoItem from "~/components/LogTodoItem"
+import ItemGroup from "~/components/ItemGroup"
 
 type DailyLogWithTodos = Prisma.DailyLogGetPayload<{
   include: { logTodos: true }
@@ -140,18 +141,20 @@ export default function IndexRoute() {
         {actionData?.formError && (
           <p className="text-red-600">{actionData?.formError}</p>
         )}
-        <ul>
-          {dailyLog.logTodos.map((todo) => {
-            return (
-              <LogTodoItem
-                key={todo.id}
-                todo={todo}
-                dailyLogId={dailyLog.id}
-                formAction="?index"
-              />
-            )
-          })}
-        </ul>
+        <ItemGroup>
+          <ul>
+            {dailyLog.logTodos.map((todo) => {
+              return (
+                <LogTodoItem
+                  key={todo.id}
+                  todo={todo}
+                  dailyLogId={dailyLog.id}
+                  formAction="?index"
+                />
+              )
+            })}
+          </ul>
+        </ItemGroup>
       </section>
     </>
   )

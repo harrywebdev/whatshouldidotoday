@@ -9,7 +9,7 @@ module.exports = {
     colors: {
       primary: colors.sky,
       secondary: colors.sky,
-      neutral: colors.stone,
+      neutral: colors.slate,
       gray: colors.gray,
       white: colors.white,
       danger: colors.red,

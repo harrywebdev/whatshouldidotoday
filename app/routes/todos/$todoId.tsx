@@ -16,6 +16,7 @@ import FormFieldDescription from "~/components/Form/FormFieldDescription"
 import FormFieldGroup from "~/components/Form/FormFieldGroup"
 import FormLegend from "~/components/Form/FormLegend"
 import FormCheckbox from "~/components/Form/FormCheckbox"
+import ScreenTitle from "~/components/Screen/ScreenTitle"
 
 type ActionData = {
   fieldErrors?: {
@@ -158,10 +159,8 @@ export default function TodosNewRoute() {
   return (
     <>
       <ScreenHeader>
-        <LargeTitle>{!isNew ? "Update TODO" : "Add New TODO"}</LargeTitle>
         <ScreenHeaderNavLink
           to={"/todos"}
-          label={"Back to TODOs"}
           icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -178,6 +177,7 @@ export default function TodosNewRoute() {
             </svg>
           }
         />
+        <ScreenTitle>{!isNew ? "Update TODO" : "Add New TODO"}</ScreenTitle>
       </ScreenHeader>
 
       <div className="px-4">

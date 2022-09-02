@@ -13,7 +13,7 @@ import FormField from "~/components/Form/FormField"
 import FormInput from "~/components/Form/FormInput"
 import FormFieldDescription from "~/components/Form/FormFieldDescription"
 import FormTextarea from "~/components/Form/FormTextarea"
-import ScreenTitle from "~/components/Screen/ScreenTitle"
+import ScreenContent from "~/components/Screen/ScreenContent"
 
 type ActionData = {
   fieldErrors?: {
@@ -175,115 +175,115 @@ export default function TodosNewRoute() {
         }
         title={!isNew ? "Update Daily Item" : "Add New Daily Item"}
         rightAction={
-          <Button
-            primary
-            type="submit"
-            label={!isNew ? "Update" : "Create new"}
-          />
+          <Button primary type="submit" label={!isNew ? "Update" : "Create"} />
         }
       />
 
-      <div className="px-4">
-        <FormFieldGroup>
-          <FormLabel htmlFor="title">Title</FormLabel>
-          <FormField>
-            <FormInput
-              id="title"
-              type="text"
-              name="title"
-              placeholder="Use imperative form"
-              defaultValue={
-                typeof actionData?.fields?.title === "string"
-                  ? actionData?.fields?.title
-                  : todo?.title
-              }
-              aria-invalid={
-                Boolean(actionData?.fieldErrors?.title) || undefined
-              }
-              aria-errormessage={
-                actionData?.fieldErrors?.title ? "title-error" : undefined
-              }
-              required
-            />
-          </FormField>
-          {actionData?.fieldErrors?.title ? (
-            <FormFieldDescription>
-              <p className="text-red-600" role="alert" id="title-error">
-                {actionData.fieldErrors.title}
-              </p>
-            </FormFieldDescription>
-          ) : null}
-        </FormFieldGroup>
+      <ScreenContent>
+        <div className="px-4">
+          <FormFieldGroup>
+            <FormLabel htmlFor="title">Title</FormLabel>
+            <FormField>
+              <FormInput
+                id="title"
+                type="text"
+                name="title"
+                placeholder="Use imperative form"
+                defaultValue={
+                  typeof actionData?.fields?.title === "string"
+                    ? actionData?.fields?.title
+                    : todo?.title
+                }
+                aria-invalid={
+                  Boolean(actionData?.fieldErrors?.title) || undefined
+                }
+                aria-errormessage={
+                  actionData?.fieldErrors?.title ? "title-error" : undefined
+                }
+                required
+              />
+            </FormField>
+            {actionData?.fieldErrors?.title ? (
+              <FormFieldDescription>
+                <p className="text-red-600" role="alert" id="title-error">
+                  {actionData.fieldErrors.title}
+                </p>
+              </FormFieldDescription>
+            ) : null}
+          </FormFieldGroup>
 
-        <FormFieldGroup>
-          <FormLabel htmlFor="description">Description</FormLabel>
-          <FormField>
-            <FormTextarea
-              id="description"
-              name="description"
-              placeholder="Add any details about this item"
-              defaultValue={
-                typeof actionData?.fields?.description === "string"
-                  ? actionData?.fields?.description
-                  : typeof todo?.description === "string"
-                  ? todo.description
-                  : ""
-              }
-            />
-          </FormField>
-        </FormFieldGroup>
-
-        <FormFieldGroup>
-          <FormLabel htmlFor="sequence">Sequence</FormLabel>
-          <FormField>
-            <FormInput
-              id="sequence"
-              type="number"
-              name="sequence"
-              placeholder="E.g. 50 or 225"
-              defaultValue={
-                typeof actionData?.fields?.sequence === "string"
-                  ? actionData?.fields?.sequence
-                  : todo?.sequence
-              }
-              aria-invalid={
-                Boolean(actionData?.fieldErrors?.sequence) || undefined
-              }
-              aria-errormessage={
-                actionData?.fieldErrors?.sequence ? "sequence-error" : undefined
-              }
-              required
-            />
-          </FormField>
-          {actionData?.fieldErrors?.sequence ? (
-            <FormFieldDescription>
-              <p className="text-red-600" role="alert" id="sequence-error">
-                {actionData.fieldErrors.sequence}
-              </p>
-            </FormFieldDescription>
-          ) : (
-            <FormFieldDescription>
-              This number determines order in the list. Use tens or hundreds.
-            </FormFieldDescription>
-          )}
-        </FormFieldGroup>
-
-        <FormFieldGroup>
-          <div className="pb-2">
-            {!isNew && (
-              <Button
-                type="submit"
-                name="delete"
-                value="yes"
-                label={"Delete"}
-                className={
-                  "mx-auto !text-white bg-secondary-600 w-48 justify-center !flex hover:bg-secondary-700"
+          <FormFieldGroup>
+            <FormLabel htmlFor="description">Description</FormLabel>
+            <FormField>
+              <FormTextarea
+                id="description"
+                name="description"
+                placeholder="Add any details about this item"
+                defaultValue={
+                  typeof actionData?.fields?.description === "string"
+                    ? actionData?.fields?.description
+                    : typeof todo?.description === "string"
+                    ? todo.description
+                    : ""
                 }
               />
+            </FormField>
+          </FormFieldGroup>
+
+          <FormFieldGroup>
+            <FormLabel htmlFor="sequence">Sequence</FormLabel>
+            <FormField>
+              <FormInput
+                id="sequence"
+                type="number"
+                name="sequence"
+                placeholder="E.g. 50 or 225"
+                defaultValue={
+                  typeof actionData?.fields?.sequence === "string"
+                    ? actionData?.fields?.sequence
+                    : todo?.sequence
+                }
+                aria-invalid={
+                  Boolean(actionData?.fieldErrors?.sequence) || undefined
+                }
+                aria-errormessage={
+                  actionData?.fieldErrors?.sequence
+                    ? "sequence-error"
+                    : undefined
+                }
+                required
+              />
+            </FormField>
+            {actionData?.fieldErrors?.sequence ? (
+              <FormFieldDescription>
+                <p className="text-red-600" role="alert" id="sequence-error">
+                  {actionData.fieldErrors.sequence}
+                </p>
+              </FormFieldDescription>
+            ) : (
+              <FormFieldDescription>
+                This number determines order in the list. Use tens or hundreds.
+              </FormFieldDescription>
             )}
-          </div>
-        </FormFieldGroup>
-      </div>
+          </FormFieldGroup>
+
+          <FormFieldGroup>
+            <div className="pb-2">
+              {!isNew && (
+                <Button
+                  type="submit"
+                  name="delete"
+                  value="yes"
+                  label={"Delete"}
+                  className={
+                    "mx-auto !text-white bg-secondary-600 w-48 justify-center !flex hover:bg-secondary-700"
+                  }
+                />
+              )}
+            </div>
+          </FormFieldGroup>
+        </div>
+      </ScreenContent>
     </form>
   )
 }

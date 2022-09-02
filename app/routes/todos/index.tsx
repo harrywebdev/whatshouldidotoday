@@ -3,11 +3,12 @@ import type { LoaderFunction } from "@remix-run/node"
 import type { Todo } from "@prisma/client"
 import { db } from "~/utils/db.server"
 import { json } from "@remix-run/node"
-import ScreenHeader from "~/components/ScreenHeader"
-import LargeTitle from "~/components/LargeTitle"
+import ScreenHeader from "~/components/Screen/ScreenHeader"
 import ScreenHeaderNavLink from "~/components/Screen/ScreenHeaderNavLink"
 import TodoItem from "~/components/TodoItem"
 import SecondaryTitle from "~/components/SecondaryTitle"
+import ScreenContent from "~/components/Screen/ScreenContent"
+import ItemGroup from "~/components/ItemGroup"
 
 type LoaderData = { todos: Todo[] }
 
@@ -57,40 +58,43 @@ export default function TodosIndexRoute() {
 
   return (
     <>
-      <ScreenHeader>
-        <LargeTitle>Current TODOs</LargeTitle>
-        <ScreenHeaderNavLink
-          to={"/todos/new"}
-          label={"Add New"}
-          icon={
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 4.5v15m7.5-7.5h-15"
-              />
-            </svg>
-          }
-        />
-      </ScreenHeader>
-      <section>
+      <ScreenHeader
+        title={"TODOs"}
+        rightAction={
+          <ScreenHeaderNavLink
+            to={"/todos/new"}
+            icon={
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4.5v15m7.5-7.5h-15"
+                />
+              </svg>
+            }
+          />
+        }
+      />
+      <ScreenContent>
         {todos.map((group) => (
           <>
             <SecondaryTitle className="px-4 mt-6">{group.label}</SecondaryTitle>
-            <ul key={group.repeat}>
-              {group.items.map((todo) => (
-                <TodoItem key={todo.id} todo={todo} />
-              ))}
-            </ul>
+            <ItemGroup>
+              <ul key={group.repeat}>
+                {group.items.map((todo) => (
+                  <TodoItem key={todo.id} todo={todo} />
+                ))}
+              </ul>
+            </ItemGroup>
           </>
         ))}
-      </section>
+      </ScreenContent>
     </>
   )
 }

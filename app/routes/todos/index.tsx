@@ -5,7 +5,7 @@ import { db } from "~/utils/db.server"
 import { json } from "@remix-run/node"
 import ScreenHeader from "~/components/ScreenHeader"
 import LargeTitle from "~/components/LargeTitle"
-import ScreenHeaderNavLink from "~/components/ScreenHeaderNavLink"
+import ScreenHeaderNavLink from "~/components/Screen/ScreenHeaderNavLink"
 import TodoItem from "~/components/TodoItem"
 import SecondaryTitle from "~/components/SecondaryTitle"
 

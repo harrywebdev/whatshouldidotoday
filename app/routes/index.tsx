@@ -4,11 +4,13 @@ import type { Prisma } from "@prisma/client"
 import { json, redirect } from "@remix-run/node"
 import { useActionData, useLoaderData } from "@remix-run/react"
 import { format, parseISO } from "date-fns"
-import LargeTitle from "~/components/LargeTitle"
-import ScreenHeader from "~/components/ScreenHeader"
+import ScreenHeader from "~/components/Screen/ScreenHeader"
 import ScreenHeaderNavLink from "~/components/ScreenHeaderNavLink"
 import LogTodoItem from "~/components/LogTodoItem"
 import ItemGroup from "~/components/ItemGroup"
+import SecondaryTitle from "~/components/SecondaryTitle"
+import ScreenTitle from "~/components/Screen/ScreenTitle"
+import ScreenContent from "~/components/Screen/ScreenContent"
 
 type DailyLogWithTodos = Prisma.DailyLogGetPayload<{
   include: { logTodos: true }
@@ -114,12 +116,9 @@ export default function IndexRoute() {
   return (
     <>
       <ScreenHeader>
-        <LargeTitle>
-          Today: {format(parseISO(dailyLog.logDate), "do MMM, y")}
-        </LargeTitle>
+        <ScreenTitle>Today</ScreenTitle>
         <ScreenHeaderNavLink
           to={`/dailylog/${dailyLog.id}/new`}
-          label={"Add New"}
           icon={
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -137,7 +136,11 @@ export default function IndexRoute() {
           }
         />
       </ScreenHeader>
-      <section>
+
+      <ScreenContent>
+        <SecondaryTitle className="px-3">
+          {format(parseISO(dailyLog.logDate), "do MMM, y")}
+        </SecondaryTitle>
         {actionData?.formError && (
           <p className="text-red-600">{actionData?.formError}</p>
         )}
@@ -155,7 +158,7 @@ export default function IndexRoute() {
             })}
           </ul>
         </ItemGroup>
-      </section>
+      </ScreenContent>
     </>
   )
 }
